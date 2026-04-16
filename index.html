@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MangaZone – Thiên Đường Truyện Tranh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red:    #e63946;
+      --yellow: #ffd166;
+      --navy:   #0d1b2a;
+      --ink:    #1a1a2e;
+      --white:  #fffdf7;
+      --card:   #ffffff;
+      --shadow: 4px 4px 0 #0d1b2a;
+      --radius: 12px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ===== HALFTONE BACKGROUND ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, #ffd16622 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== HEADER / NAV ===== */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--navy);
+      border-bottom: 4px solid var(--yellow);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw;
+      height: 64px;
+    }
+    .logo {
+      font-family: 'Bangers', cursive;
+      font-size: 2rem; letter-spacing: 2px;
+      color: var(--yellow);
+      text-shadow: 2px 2px 0 var(--red);
+      text-decoration: none;
+    }
+    nav a {
+      color: #fff; text-decoration: none; font-weight: 700;
+      margin-left: 28px; font-size: .95rem;
+      transition: color .2s;
+    }
+    nav a:hover { color: var(--yellow); }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative; z-index: 1;
+      background: linear-gradient(135deg, var(--navy) 55%, var(--red) 100%);
+      padding: 80px 5vw 64px;
+      display: flex; align-items: center; gap: 48px;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '💥';
+      font-size: 260px; position: absolute; right: 4vw; top: -40px;
+      opacity: .07; pointer-events: none; line-height: 1;
+    }
+    .hero-text { max-width: 540px; }
+    .hero-badge {
+      display: inline-block; background: var(--yellow); color: var(--navy);
+      font-weight: 900; font-size: .8rem; border-radius: 99px;
+      padding: 4px 14px; margin-bottom: 16px; letter-spacing: 1px;
+      border: 2px solid var(--navy); text-transform: uppercase;
+    }
+    .hero h1 {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      color: #fff; line-height: 1.05;
+      text-shadow: 3px 3px 0 var(--red);
+    }
+    .hero p {
+      color: #ffffffcc; margin-top: 16px; font-size: 1.05rem; line-height: 1.7;
+    }
+    .hero-btn {
+      display: inline-block; margin-top: 28px;
+      background: var(--yellow); color: var(--navy);
+      font-weight: 900; font-size: 1rem; text-decoration: none;
+      padding: 14px 32px; border-radius: var(--radius);
+      border: 3px solid var(--navy); box-shadow: var(--shadow);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .hero-btn:hover {
+      transform: translate(-2px,-2px);
+      box-shadow: 6px 6px 0 var(--navy);
+    }
+
+    /* ===== SECTION TITLES ===== */
+    .section { position: relative; z-index: 1; padding: 64px 5vw; }
+    .section-title {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--navy); letter-spacing: 2px;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 40px;
+    }
+    .section-title::after {
+      content: ''; flex: 1; height: 4px;
+      background: repeating-linear-gradient(90deg, var(--red) 0, var(--red) 12px, transparent 12px, transparent 20px);
+    }
+
+    /* ===== GRID ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 28px;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--card);
+      border: 3px solid var(--navy);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform .15s, box-shadow .15s;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translate(-3px,-3px);
+      box-shadow: 7px 7px 0 var(--navy);
+    }
+    .card-img-wrap {
+      position: relative; overflow: hidden;
+      aspect-ratio: 3/4; background: #f0ede8;
+    }
+    .card-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .4s;
+    }
+    .card:hover .card-img-wrap img { transform: scale(1.05); }
+    .card-badge {
+      position: absolute; top: 10px; left: 10px;
+      background: var(--red); color: #fff;
+      font-size: .72rem; font-weight: 900; letter-spacing: 1px;
+      padding: 3px 10px; border-radius: 99px;
+      border: 2px solid var(--navy); text-transform: uppercase;
+    }
+    .card-body { padding: 14px 16px 18px; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-weight: 900; font-size: 1rem; line-height: 1.3; margin-bottom: 4px; }
+    .card-author { font-size: .82rem; color: #666; margin-bottom: 10px; }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .card-price {
+      font-family: 'Bangers', cursive; font-size: 1.4rem;
+      color: var(--red); letter-spacing: 1px;
+    }
+    .card-volumes { font-size: .78rem; color: #888; }
+    .btn-order {
+      display: block; width: 100%;
+      background: var(--navy); color: var(--yellow);
+      font-weight: 900; font-size: .9rem; text-align: center;
+      padding: 10px; border: none; cursor: pointer;
+      text-decoration: none;
+      border-top: 3px solid var(--navy);
+      transition: background .2s, color .2s;
+      letter-spacing: .5px;
+    }
+    .btn-order:hover { background: var(--red); color: #fff; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: #0009; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--white); border: 4px solid var(--navy);
+      border-radius: 16px; box-shadow: 8px 8px 0 var(--navy);
+      max-width: 480px; width: 92%; padding: 32px 28px;
+      position: relative;
+      transform: translateY(24px); transition: transform .25s;
+    }
+    .modal-overlay.active .modal { transform: translateY(0); }
+    .modal-close {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--navy);
+    }
+    .modal h2 {
+      font-family: 'Bangers', cursive; font-size: 1.7rem;
+      color: var(--navy); margin-bottom: 6px;
+    }
+    .modal-price { font-family: 'Bangers', cursive; font-size: 2rem; color: var(--red); margin-bottom: 16px; }
+    .modal-desc { font-size: .95rem; color: #444; line-height: 1.7; margin-bottom: 20px; }
+    .modal-order-btn {
+      display: block; width: 100%; text-align: center;
+      background: var(--red); color: #fff;
+      font-weight: 900; font-size: 1rem; letter-spacing: 1px;
+      padding: 14px; border-radius: var(--radius);
+      border: 3px solid var(--navy); box-shadow: var(--shadow);
+      text-decoration: none; transition: transform .15s, box-shadow .15s;
+    }
+    .modal-order-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--navy); }
+
+    /* ===== HOW TO ORDER ===== */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 24px; }
+    .step {
+      background: var(--navy); color: #fff;
+      border-radius: var(--radius); padding: 24px 20px;
+      border: 3px solid var(--navy); box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .step-num {
+      font-family: 'Bangers', cursive; font-size: 3rem;
+      color: var(--yellow); display: block; margin-bottom: 8px;
+    }
+    .step h3 { font-size: 1rem; margin-bottom: 6px; color: var(--yellow); }
+    .step p { font-size: .88rem; color: #ffffffbb; line-height: 1.6; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      position: relative; z-index: 1;
+      background: var(--navy); color: #ffffffaa;
+      text-align: center; padding: 28px 5vw;
+      font-size: .88rem; border-top: 4px solid var(--yellow);
+    }
+    footer strong { color: var(--yellow); }
+
+    /* ===== SCROLL ANIMATION ===== */
+    .card, .step {
+      opacity: 0; transform: translateY(24px);
+      animation: fadeUp .5s forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: none; }
+    }
+    .card:nth-child(1)  { animation-delay: .05s }
+    .card:nth-child(2)  { animation-delay: .10s }
+    .card:nth-child(3)  { animation-delay: .15s }
+    .card:nth-child(4)  { animation-delay: .20s }
+    .card:nth-child(5)  { animation-delay: .25s }
+    .card:nth-child(6)  { animation-delay: .30s }
+    .card:nth-child(7)  { animation-delay: .35s }
+    .card:nth-child(8)  { animation-delay: .40s }
+    .card:nth-child(9)  { animation-delay: .45s }
+    .card:nth-child(10) { animation-delay: .50s }
+    .card:nth-child(11) { animation-delay: .55s }
+    .card:nth-child(12) { animation-delay: .60s }
+
+    @media (max-width: 600px) {
+      .hero { flex-direction: column; padding: 48px 5vw 40px; }
+      nav a:first-child { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#">💥 MangaZone</a>
+  <nav>
+    <a href="#catalog">Bộ Sưu Tập</a>
+    <a href="#how">Cách Đặt</a>
+    <a href="#order-form" id="nav-order">🛒 Đặt Hàng</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <span class="hero-badge">✨ Mới về hàng tuần</span>
+    <h1>Thiên Đường<br/>Truyện Tranh</h1>
+    <p>Hơn 12 bộ truyện tranh hot nhất — manga Nhật, manhwa Hàn, webtoon đủ thể loại. Giao hàng toàn quốc, thanh toán khi nhận hàng.</p>
+    <a href="#catalog" class="hero-btn">Xem Bộ Sưu Tập →</a>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<section class="section" id="catalog">
+  <h2 class="section-title">📚 Bộ Sưu Tập</h2>
+  <div class="grid" id="manga-grid"></div>
+</section>
+
+<!-- HOW TO ORDER -->
+<section class="section" id="how" style="background:#fdf6e3; border-top:4px dashed #ffd166; border-bottom:4px dashed #ffd166;">
+  <h2 class="section-title">🛒 Cách Đặt Hàng</h2>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">01</span>
+      <h3>Chọn Truyện</h3>
+      <p>Duyệt danh mục, nhấn "Đặt Mua" trên bộ truyện bạn thích.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">02</span>
+      <h3>Điền Form</h3>
+      <p>Điền tên, số điện thoại, địa chỉ và tên bộ truyện muốn mua.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">03</span>
+      <h3>Xác Nhận</h3>
+      <p>Chúng tôi liên hệ lại trong vòng 24h để xác nhận đơn hàng.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">04</span>
+      <h3>Nhận Hàng</h3>
+      <p>Giao hàng toàn quốc 2–5 ngày. Thanh toán khi nhận (COD).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER FORM EMBED -->
+<section class="section" id="order-form">
+  <h2 class="section-title">📝 Đặt Hàng Ngay</h2>
+  <!-- 
+    ====================================================
+    HƯỚNG DẪN: Thay URL dưới bằng link Google Form của bạn
+    Xem file HUONG_DAN.md để biết cách tạo Google Form
+    ====================================================
+  -->
+  <div style="border:4px solid var(--navy); border-radius:16px; overflow:hidden; box-shadow:var(--shadow);">
+    <iframe 
+      id="order-iframe"
+      src="https://forms.gle/r5SVFZhMxhvjoEVu8"
+      width="100%" height="700" frameborder="0" marginheight="0" marginwidth="0"
+      style="display:block;">
+      Đang tải…
+    </iframe>
+    <!-- Khi chưa cài form, hiện placeholder -->
+    <div id="form-placeholder" style="display:none; padding:48px; text-align:center; background:#fff8e7;">
+      <p style="font-size:1.1rem; font-weight:700; color:var(--navy);">⚠️ Bạn chưa cài Google Form!</p>
+      <p style="margin-top:8px; color:#555;">Xem file <strong>HUONG_DAN.md</strong> đi kèm để tạo form và dán link vào đây.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 <strong>MangaZone</strong> — Thiên Đường Truyện Tranh 💥</p>
+  <p style="margin-top:6px;">📍 Hà Nội &nbsp;|&nbsp; 📞 0901 234 567 &nbsp;|&nbsp; ✉️ mangazone@gmail.com</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modal-title"></h2>
+    <div class="modal-price" id="modal-price"></div>
+    <p class="modal-desc" id="modal-desc"></p>
+    <a class="modal-order-btn" id="modal-link" href="#order-form" onclick="closeModal()">🛒 Đặt Mua Ngay</a>
+  </div>
+</div>
+
+<script>
+/* ===== DỮ LIỆU 12 BỘ TRUYỆN ===== */
+// Ảnh minh họa dùng picsum.photos — thay bằng ảnh thật của bạn
+const mangas = [
+  {
+    title: "Naruto",
+    author: "Masashi Kishimoto",
+    genre: "Hành Động",
+    volumes: "72 tập",
+    price: "85.000đ/tập",
+    desc: "Câu chuyện về Naruto Uzumaki — cậu bé mang trong mình Cửu Vĩ, ước mơ trở thành Hokage vĩ đại nhất. Bộ manga huyền thoại của làng ninja.",
+    img: "https://picsum.photos/seed/naruto/400/530",
+    badge: "Bestseller",
+  },
+  {
+    title: "One Piece",
+    author: "Eiichiro Oda",
+    genre: "Phiêu Lưu",
+    volumes: "108 tập",
+    price: "90.000đ/tập",
+    desc: "Monkey D. Luffy cùng Băng Mũ Rơm dong buồm tìm kho báu vĩ đại nhất thế giới. Bộ truyện dài nhất và bán chạy nhất lịch sử manga.",
+    img: "https://picsum.photos/seed/onepiece/400/530",
+    badge: "Hot",
+  },
+  {
+    title: "Demon Slayer",
+    author: "Koyoharu Gotouge",
+    genre: "Kinh Dị",
+    volumes: "23 tập",
+    price: "80.000đ/tập",
+    desc: "Tanjiro Kamado bước vào con đường diệt quỷ sau khi gia đình bị tàn sát, cứu em gái Nezuko. Hành động mãn nhãn, cảm xúc sâu sắc.",
+    img: "https://picsum.photos/seed/demonslayer/400/530",
+    badge: "Trọn Bộ",
+  },
+  {
+    title: "Attack on Titan",
+    author: "Hajime Isayama",
+    genre: "Hành Động",
+    volumes: "34 tập",
+    price: "88.000đ/tập",
+    desc: "Nhân loại tồn tại sau những bức tường khổng lồ trước sự đe dọa của Titan. Cốt truyện phức tạp, nhiều twist không thể đoán trước.",
+    img: "https://picsum.photos/seed/aot/400/530",
+    badge: "Trọn Bộ",
+  },
+  {
+    title: "Dragon Ball",
+    author: "Akira Toriyama",
+    genre: "Hành Động",
+    volumes: "42 tập",
+    price: "75.000đ/tập",
+    desc: "Hành trình của Son Goku từ cậu bé sở hữu đuôi khỉ đến chiến binh mạnh nhất vũ trụ. Kinh điển bất hủ qua nhiều thế hệ.",
+    img: "https://picsum.photos/seed/dragonball/400/530",
+    badge: "Kinh Điển",
+  },
+  {
+    title: "Jujutsu Kaisen",
+    author: "Gege Akutami",
+    genre: "Siêu Nhiên",
+    volumes: "26 tập",
+    price: "82.000đ/tập",
+    desc: "Yuji Itadori nuốt ngón tay của Sukuna — ác quỷ huyền thoại — và bước vào thế giới phù chú. Hoạt hình cực kỳ ấn tượng.",
+    img: "https://picsum.photos/seed/jjk/400/530",
+    badge: "Đang Ra",
+  },
+  {
+    title: "Solo Leveling",
+    author: "Chugong",
+    genre: "Fantasy",
+    volumes: "8 tập",
+    price: "95.000đ/tập",
+    desc: "Sung Jin-Woo — thợ săn yếu nhất — bất ngờ trở thành thợ săn duy nhất có thể \"lên cấp\". Manhwa đỉnh cao từ Hàn Quốc.",
+    img: "https://picsum.photos/seed/sololeveling/400/530",
+    badge: "Manhwa",
+  },
+  {
+    title: "My Hero Academia",
+    author: "Kōhei Horikoshi",
+    genre: "Siêu Anh Hùng",
+    volumes: "40 tập",
+    price: "80.000đ/tập",
+    desc: "Izuku Midoriya không có năng lực siêu nhiên nhưng mơ ước trở thành anh hùng vĩ đại nhất. Truyền cảm hứng, hành động không ngừng.",
+    img: "https://picsum.photos/seed/mha/400/530",
+    badge: "Trọn Bộ",
+  },
+  {
+    title: "Vinland Saga",
+    author: "Makoto Yukimura",
+    genre: "Lịch Sử",
+    volumes: "27 tập",
+    price: "92.000đ/tập",
+    desc: "Thorfinn – con trai của chiến binh Viking vĩ đại – trên hành trình phục thù và tìm lại chính mình. Lịch sử chân thực, tâm lý sâu sắc.",
+    img: "https://picsum.photos/seed/vinland/400/530",
+    badge: "Đang Ra",
+  },
+  {
+    title: "Slam Dunk",
+    author: "Takehiko Inoue",
+    genre: "Thể Thao",
+    volumes: "31 tập",
+    price: "78.000đ/tập",
+    desc: "Hanamichi Sakuragi bắt đầu chơi bóng rổ chỉ để tán gái, nhưng dần khám phá tài năng thiên bẩm. Kinh điển bóng rổ không thể thiếu.",
+    img: "https://picsum.photos/seed/slamdunk/400/530",
+    badge: "Kinh Điển",
+  },
+  {
+    title: "Spy x Family",
+    author: "Tatsuya Endo",
+    genre: "Hài Hước",
+    volumes: "12 tập",
+    price: "80.000đ/tập",
+    desc: "Điệp viên, sát thủ và bé gái đọc được suy nghĩ sống chung như một gia đình để hoàn thành nhiệm vụ bí mật. Siêu dễ thương!",
+    img: "https://picsum.photos/seed/spyfamily/400/530",
+    badge: "Đang Ra",
+  },
+  {
+    title: "Chainsaw Man",
+    author: "Tatsuki Fujimoto",
+    genre: "Kinh Dị",
+    volumes: "16 tập",
+    price: "85.000đ/tập",
+    desc: "Denji hợp nhất với Pochita – ác quỷ cưa xích – để trở thành Chainsaw Man. Manga điên rồ, sáng tạo và đầy bất ngờ nhất thập kỷ.",
+    img: "https://picsum.photos/seed/chainsaw/400/530",
+    badge: "Viral",
+  },
+];
+
+/* ===== RENDER CARDS ===== */
+const grid = document.getElementById('manga-grid');
+mangas.forEach((m, i) => {
+  grid.innerHTML += `
+  <article class="card" onclick="openModal(${i})">
+    <div class="card-img-wrap">
+      <img src="${m.img}" alt="${m.title}" loading="lazy" />
+      <span class="card-badge">${m.badge}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-title">${m.title}</div>
+      <div class="card-author">${m.author} · ${m.genre}</div>
+      <div class="card-meta">
+        <span class="card-price">${m.price}</span>
+        <span class="card-volumes">${m.volumes}</span>
+      </div>
+    </div>
+    <a class="btn-order" href="#order-form">🛒 Đặt Mua</a>
+  </article>`;
+});
+
+/* ===== MODAL ===== */
+function openModal(i) {
+  const m = mangas[i];
+  document.getElementById('modal-title').textContent = m.title;
+  document.getElementById('modal-price').textContent = m.price;
+  document.getElementById('modal-desc').textContent = m.desc + ` (${m.volumes})`;
+  document.getElementById('modal').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+/* ===== KIỂM TRA FORM ===== */
+// Nếu link form chưa được thay → hiện placeholder
+(function() {
+  const iframe = document.getElementById('order-iframe');
+  const placeholder = document.getElementById('form-placeholder');
+  if (iframe.src.includes('NHAP_ID_FORM')) {
+    iframe.style.display = 'none';
+    placeholder.style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>
